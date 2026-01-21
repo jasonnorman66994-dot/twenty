@@ -8,6 +8,7 @@ import { pageLayoutEditingWidgetIdComponentState } from '@/page-layout/states/pa
 import { pageLayoutResizingWidgetIdComponentState } from '@/page-layout/states/pageLayoutResizingWidgetIdComponentState';
 import { type PageLayoutWidget } from '@/page-layout/types/PageLayoutWidget';
 import { PageLayoutWidgetForbiddenDisplay } from '@/page-layout/widgets/components/PageLayoutWidgetForbiddenDisplay';
+import { PageLayoutWidgetInvalidConfigDisplay } from '@/page-layout/widgets/components/PageLayoutWidgetInvalidConfigDisplay';
 import { WidgetContentRenderer } from '@/page-layout/widgets/components/WidgetContentRenderer';
 import { useIsCurrentWidgetLastOfTab } from '@/page-layout/widgets/hooks/useIsCurrentWidgetLastOfTab';
 import { useIsInPinnedTab } from '@/page-layout/widgets/hooks/useIsInPinnedTab';
@@ -26,6 +27,7 @@ import { useSetRecoilComponentFamilyState } from '@/ui/utilities/state/component
 import { useTheme } from '@emotion/react';
 import styled from '@emotion/styled';
 import { type MouseEvent } from 'react';
+import { ErrorBoundary } from 'react-error-boundary';
 import { IconLock } from 'twenty-ui/display';
 import { WidgetType } from '~/generated/graphql';
 
@@ -82,7 +84,11 @@ export const WidgetRenderer = ({ widget }: WidgetRendererProps) => {
   const isRichTextWidget = widget.type === WidgetType.STANDALONE_RICH_TEXT;
   const hideRichTextHeader = isRichTextWidget && !isPageLayoutInEditMode;
 
-  const showHeader = layoutMode !== 'canvas' && !hideRichTextHeader;
+  const showHeader =
+    layoutMode !== 'canvas' &&
+    !hideRichTextHeader &&
+    // TODO: use a more generic approach after record page layout v1 release
+    widget.type !== WidgetType.FIELDS;
 
   const handleClick = () => {
     handleEditWidget({
@@ -138,6 +144,7 @@ export const WidgetRenderer = ({ widget }: WidgetRendererProps) => {
         {showHeader && (
           <WidgetCardHeader
             widgetId={widget.id}
+            variant={variant}
             isInEditMode={isPageLayoutInEditMode}
             isResizing={isResizing}
             title={widget.title}
@@ -154,9 +161,14 @@ export const WidgetRenderer = ({ widget }: WidgetRendererProps) => {
           />
         )}
 
-        <WidgetCardContent variant={variant}>
-          {hasAccess && <WidgetContentRenderer widget={widget} />}
-          {!hasAccess && (
+        <WidgetCardContent variant={variant} hasHeader={showHeader}>
+          {hasAccess ? (
+            <ErrorBoundary
+              FallbackComponent={PageLayoutWidgetInvalidConfigDisplay}
+            >
+              <WidgetContentRenderer widget={widget} />
+            </ErrorBoundary>
+          ) : (
             <StyledNoAccessContainer>
               <IconLock
                 color={theme.font.color.tertiary}

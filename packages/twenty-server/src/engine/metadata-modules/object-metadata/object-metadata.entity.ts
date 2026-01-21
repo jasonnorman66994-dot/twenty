@@ -2,6 +2,7 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  Index,
   ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
@@ -29,6 +30,7 @@ import { SyncableEntity } from 'src/engine/workspace-manager/types/syncable-enti
   'namePlural',
   'workspaceId',
 ])
+@Index('IDX_OBJECT_METADATA_DATA_SOURCE_ID', ['dataSourceId'])
 export class ObjectMetadataEntity
   extends SyncableEntity
   implements Required<ObjectMetadataEntity>

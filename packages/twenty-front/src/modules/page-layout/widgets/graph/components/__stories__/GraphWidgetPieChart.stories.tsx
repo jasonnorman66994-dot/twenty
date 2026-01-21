@@ -1,4 +1,4 @@
-import { type Meta, type StoryObj } from '@storybook/react';
+import { type Meta, type StoryObj } from '@storybook/react-vite';
 
 import { CoreObjectNameSingular } from '@/object-metadata/types/CoreObjectNameSingular';
 import { GraphWidgetTestWrapper } from '@/page-layout/widgets/graph/__tests__/GraphWidgetTestWrapper';
@@ -9,7 +9,6 @@ import {
   WidgetConfigurationType,
   type PieChartConfiguration,
 } from '~/generated/graphql';
-import { I18nFrontDecorator } from '~/testing/decorators/I18nFrontDecorator';
 import { ObjectMetadataItemsDecorator } from '~/testing/decorators/ObjectMetadataItemsDecorator';
 import { getMockFieldMetadataItemOrThrow } from '~/testing/utils/getMockFieldMetadataItemOrThrow';
 import { getMockObjectMetadataItemOrThrow } from '~/testing/utils/getMockObjectMetadataItemOrThrow';
@@ -34,7 +33,6 @@ const meta: Meta<typeof GraphWidgetPieChart> = {
   title: 'Modules/PageLayout/Widgets/GraphWidgetPieChart',
   component: GraphWidgetPieChart,
   decorators: [
-    I18nFrontDecorator,
     ObjectMetadataItemsDecorator,
     (Story) => (
       <GraphWidgetTestWrapper>
@@ -385,7 +383,6 @@ export const Storage: Story = {
 
 export const Catalog: Story = {
   decorators: [
-    I18nFrontDecorator,
     ObjectMetadataItemsDecorator,
     (Story) => (
       <GraphWidgetTestWrapper>
